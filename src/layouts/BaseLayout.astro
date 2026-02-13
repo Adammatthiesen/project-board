@@ -14,7 +14,7 @@ const { title, description, slug, avatarUrl } = Astro.props;
 
 const baseUrl = process.env.NODE_ENV === 'development'
   ? "http://localhost:4321"
-  : new URL(Astro.request.url).origin;
+  : new URL(Astro.site ?? Astro.request.url).origin;
 
 const ogImage = new URL(`/open-graph/${slug}.png`, baseUrl).toString();
 ---
