@@ -1,4 +1,9 @@
 ---
+import { config } from 'src/config';
+
+
+const org = config.organization;
+
 type Props = {
   defaultTheme?: "auto" | "dark" | "light" | undefined;
 };
@@ -6,11 +11,12 @@ type Props = {
 const { defaultTheme = "auto" } = Astro.props;
 ---
 
-<script is:inline data-default-theme={defaultTheme}>
+<script is:inline data-default-theme={defaultTheme} data-org-name={org}>
   window.theme ??= (() => {
     const defaultTheme =
       document.currentScript.getAttribute("data-default-theme");
-    const storageKey = "theme";
+    const orgName = document.currentScript.getAttribute("data-org-name");
+    const storageKey = `project-board-theme-${orgName}`;
     const store =
       typeof localStorage !== "undefined"
         ? localStorage
