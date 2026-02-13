@@ -1,0 +1,62 @@
+---
+import "../styles/global.css";
+import ThemeManager from '../components/ThemeManager.astro';
+import ThemeSelector from '../components/ThemeSelector.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  avatarUrl?: string;
+}
+
+const { title, description, slug, avatarUrl } = Astro.props;
+
+const baseUrl = import.meta.env.DEV
+  ? "http://localhost:4321"
+  : new URL(Astro.request.url).origin;
+
+const ogImage = new URL(`/open-graph/${slug}.png`, baseUrl).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="twitter:image" content={ogImage} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <ThemeManager defaultTheme="auto" />
+  </head>
+  <body>
+    <ThemeSelector />
+    <div class="container">
+      <header>
+        <div class="header-content">
+          {avatarUrl && (
+            <img src={avatarUrl} alt="Organization avatar" class="org-avatar" />
+          )}
+          <div class="header-text">
+            <h1>{title}</h1>
+            <p class="subtitle">{description}</p>
+          </div>
+        </div>
+        <nav class="nav-links">
+          <slot name="navigation" />
+        </nav>
+      </header>
+      
+      <main>
+        <slot />
+      </main>
+      
+      <footer>
+        <slot name="footer" />
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+---
+interface Props {
+  currentState?: string;
+  currentType?: string;
+}
+
+const { currentState = 'open', currentType = 'all' } = Astro.props;
+---
+
+<div class="filters">
+  <div class="filter-group">
+    <label for="state-filter">State:</label>
+    <select id="state-filter" name="state">
+      <option value="open" selected={currentState === 'open'}>Open</option>
+      <option value="closed" selected={currentState === 'closed'}>Closed</option>
+      <option value="all" selected={currentState === 'all'}>All</option>
+    </select>
+  </div>
+  
+  <div class="filter-group">
+    <label for="type-filter">Type:</label>
+    <select id="type-filter" name="type">
+      <option value="all" selected={currentType === 'all'}>All</option>
+      <option value="issue" selected={currentType === 'issue'}>Issues</option>
+      <option value="pr" selected={currentType === 'pr'}>Pull Requests</option>
+      <option value="discussion" selected={currentType === 'discussion'}>Discussions</option>
+    </select>
+  </div>
+  
+  <button type="button" class="filter-button">Apply Filters</button>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const stateFilter = document.getElementById('state-filter') as HTMLSelectElement;
+    const typeFilter = document.getElementById('type-filter') as HTMLSelectElement;
+    const filterButton = document.querySelector('.filter-button') as HTMLButtonElement;
+    
+    filterButton.addEventListener('click', () => {
+      const params = new URLSearchParams();
+      params.set('state', stateFilter.value);
+      params.set('type', typeFilter.value);
+      window.location.href = `/?${params.toString()}`;
+    });
+  });
+</script>
