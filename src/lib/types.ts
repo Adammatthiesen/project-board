@@ -89,6 +89,33 @@ export interface ProjectConfig {
    * Supports placeholders like {{org}} which will be replaced with the organization name
    */
   openGraph: {
+    // Hex color code for the theme color meta tag (e.g. #1d4ed8)
+    /**
+     * Theme color for the website, used in the meta tag and can be used in OG images
+     * Example: `#1d4ed8`
+     */
+    themeColor?: `#${string}`;
+
+    /**
+     * Optional favicon configuration for the website
+     */
+    favicon?: {
+      /**
+       * Path to the favicon image, relative to the public directory
+       * Example: `/favicon.svg`
+       * 
+       * Note: Make sure to include the leading slash and that the file exists in the public directory.
+       */
+      path: string;
+
+      /**
+       * MIME type of the favicon image
+       * Example: `image/svg+xml` for SVG files, `image/png` for PNG files
+       * 
+       * Note: This should match the actual file type of the favicon image.
+       */
+      type: string;
+    } 
 
     /**
      * Templates for the index page OG image

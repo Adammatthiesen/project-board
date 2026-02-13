@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import ThemeManager from '../components/ThemeManager.astro';
 import ThemeSelector from '../components/ThemeSelector.astro';
+import { config } from "src/config";
 
 interface Props {
   title: string;
@@ -14,9 +15,13 @@ const { title, description, slug, avatarUrl } = Astro.props;
 
 const baseUrl = process.env.NODE_ENV === 'development'
   ? "http://localhost:4321"
-  : new URL(Astro.site ?? Astro.request.url).origin;
+  : new URL(Astro.site || Astro.request.url).origin;
 
 const ogImage = new URL(`/open-graph/${slug}.png`, baseUrl).toString();
+
+const themeColor = config.openGraph?.themeColor || '#1d4ed8';
+const faviconPath = config.openGraph?.favicon?.path || '/favicon.svg';
+const faviconType = config.openGraph?.favicon?.type || 'image/svg+xml';
 ---
 
 <!doctype html>
@@ -24,8 +29,8 @@ const ogImage = new URL(`/open-graph/${slug}.png`, baseUrl).toString();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="theme-color" content="#1d4ed8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content={themeColor} />
+    <link rel="icon" type={faviconType} href={faviconPath} />
 
     <title>{title}</title>
     <meta name="description" content={description}>
