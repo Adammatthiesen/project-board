@@ -53,6 +53,10 @@ pnpm preview
 ```
 /
 ├── src/
+│   ├── assets/                   # Assets for OG Images
+│   │   ├── logo.png              # Png version of the logo used for OG Images
+│   │   ├── og-bg.png             # Png background used for OG Images
+│   │   ├── Onest-*.ttf           # Fonts for OG images
 │   ├── components/
 │   │   ├── FilterBar.astro       # State/type filter controls
 │   │   ├── GitHubItem.astro      # Individual item card display
@@ -61,8 +65,11 @@ pnpm preview
 │   ├── layouts/
 │   │   └── BaseLayout.astro      # Main layout with header/nav/footer
 │   ├── lib/
-│   │   └── github.ts             # GitHub API integration + caching
+│   │   ├── github.ts             # GitHub API integration + caching
+│   │   └── types.ts              # Types for the project config
 │   ├── pages/
+│   │   ├── open-graph/
+│   │   │   └── [...route].ts     # Dynamic route for generating OG images
 │   │   ├── index.astro           # Main board with repository tabs
 │   │   └── roadmap.astro         # Roadmap page with README viewer
 │   ├── styles/
