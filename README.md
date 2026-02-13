@@ -88,6 +88,9 @@ This project integrates with GitHub using both REST and GraphQL APIs, handled in
 - Discussions (requires authentication)
 - Configurable via `enableDiscussions` in config
 
+> [!note]
+> Without discussions the roadmap page will be limited to issues and pull requests
+
 ### Caching
 All API responses are cached in memory with a 5-minute TTL to improve performance and reduce API calls.
 
