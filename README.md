@@ -1,6 +1,6 @@
 # GitHub Project Board
 
-<img width="2333" height="1197" alt="image" src="./assets/readme.png" />
+<img width="2333" height="1197" alt="image" src="./assets/page-index.png" />
 
 A server-side rendered Astro application that provides a unified view of GitHub issues, pull requests, and discussions for any GitHub organization. Features repository tabs, advanced filtering, and a dedicated roadmap page with README viewer.
 
