@@ -28,7 +28,7 @@ A server-side rendered Astro application that provides a unified view of GitHub 
 
 ### Prerequisites
 
-- Node.js 18+ or latest LTS
+- Node.js 20+ or latest LTS
 - pnpm package manager
 - (Optional) GitHub Personal Access Token for higher rate limits
 
@@ -102,24 +102,24 @@ export const config: ProjectConfig = {
   
   // Optional: GitHub token for higher rate limits
   // You can also set this via GITHUB_TOKEN environment variable
-  githubToken: import.meta.env.GITHUB_TOKEN || '',
+  githubToken: process.env.GITHUB_TOKEN || '',
   
   // List specific repositories to display
   // Leave empty ([]) to show all repositories
   allowedRepositories: [],
-  // Example: ['astro-studiocms', 'studiocms-website']
+  // Example: ['studiocms', 'studiocms.dev', 'ui']
   
   // Maximum items to fetch per request
   maxItemsPerPage: 100,
   
   // Enable/disable discussions (requires GraphQL API)
-  enableDiscussions: false,
+  enableDiscussions: true,
   
   // Repository used for roadmap page
   roadmapRepository: 'roadmap',
   
   // Default repository tab to show on index page
-  defaultRepository: 'astro-studiocms',
+  defaultRepository: 'studiocms',
   
   // Custom function to sort repositories
   // Default: alphabetical sort
