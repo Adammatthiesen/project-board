@@ -41,6 +41,13 @@ export interface ProjectConfig {
   enableDiscussions: boolean;
   
   /**
+   * List of GitHub usernames to exclude from results
+   * Useful for filtering out bot accounts or automation users
+   * Example: ['dependabot', 'renovate-bot', 'github-actions[bot]']
+   */
+  excludedUsers?: string[];
+  
+  /**
    * Name of the roadmap repository
    * This repository will be displayed on the /roadmap page
    */

@@ -178,6 +178,22 @@ function buildRepoFilter(org: string, allowedRepos: string[]): string {
 }
 
 /**
+ * Filter out items from excluded users
+ */
+function filterByUser(items: GitHubItem[]): GitHubItem[] {
+  if (!config.excludedUsers || config.excludedUsers.length === 0) {
+    return items;
+  }
+  
+  return items.filter(item => {
+    const username = item.user?.login?.toLowerCase();
+    return !config.excludedUsers?.some(excluded => 
+      excluded.toLowerCase() === username
+    );
+  });
+}
+
+/**
  * Transform GitHub issue/PR data to our format
  */
 function transformGitHubItem(item: any, type: 'issue' | 'pr'): GitHubItem {
@@ -244,7 +260,7 @@ export async function fetchIssues(org: string, state: string = 'open', allowedRe
         }
       }
       
-      return allIssues;
+      return filterByUser(allIssues);
     }
     
     // Otherwise use search API for org-wide search
@@ -263,7 +279,8 @@ export async function fetchIssues(org: string, state: string = 'open', allowedRe
     
     if (!result?.items) return [];
     
-    return result.items.map((item: any) => transformGitHubItem(item, 'issue'));
+    const issues = result.items.map((item: any) => transformGitHubItem(item, 'issue'));
+    return filterByUser(issues);
   } catch (error) {
     console.error('Error fetching issues:', error);
     return [];
@@ -300,7 +317,7 @@ export async function fetchPullRequests(org: string, state: string = 'open', all
         }
       }
       
-      return allPRs;
+      return filterByUser(allPRs);
     }
     
     // Otherwise use search API for org-wide search
@@ -319,7 +336,8 @@ export async function fetchPullRequests(org: string, state: string = 'open', all
     
     if (!result?.items) return [];
     
-    return result.items.map((item: any) => transformGitHubItem(item, 'pr'));
+    const prs = result.items.map((item: any) => transformGitHubItem(item, 'pr'));
+    return filterByUser(prs);
   } catch (error) {
     console.error('Error fetching pull requests:', error);
     return [];
@@ -427,7 +445,7 @@ export async function fetchDiscussions(org: string, allowedRepos: string[] = [])
       }
     }
     
-    return allDiscussions;
+    return filterByUser(allDiscussions);
   } catch (error) {
     console.error('Error fetching discussions:', error);
     return [];

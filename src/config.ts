@@ -14,6 +14,7 @@ export const config: ProjectConfig = {
   allowedRepositories: ['studiocms', 'cfetch', 'bots', 'docs', 'ui', 'expressive-code-twoslash', 'studiocms.dev'],
   maxItemsPerPage: 100,
   enableDiscussions: true,
+  excludedUsers: ['renovate[bot]'], // Add usernames to filter out (e.g., ['dependabot', 'renovate-bot', 'github-actions[bot]'])
   defaultRepository: 'studiocms', // Optional: Set default selected repository
   roadmapRepository: 'roadmap',
   roadmapCategoryLabels: {
