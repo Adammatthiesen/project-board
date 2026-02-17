@@ -1,47 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GitHubItem from '../components/GitHubItem.astro';
-import { fetchIssues, fetchPullRequests, fetchDiscussions, fetchOrganization, fetchReadme } from '../lib/github';
+import { fetchOrganization } from '../lib/github';
 import { config } from '../config';
-import MarkdownIt from 'markdown-it';
-import markdownItAnchor from 'markdown-it-anchor';
+import RoadmapBodyIsland from 'src/components/RoadmapBodyIsland.astro';
+import Loading from 'src/components/Loading.astro';
 
 const org = config.organization;
 const roadmapRepo = config.roadmapRepository;
 
-// Initialize markdown-it with anchor plugin
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true,
-}).use(markdownItAnchor, {
-  permalink: false,
-  slugify: (s: string) => s
-    .toLowerCase()
-    // Replace non-alphanumeric characters with dashes
-    .replace(/[^\w]+/g, '-')
-    // Remove leading/trailing dashes
-    .replace(/^-+|-+$/g, '')
-});
-
 // Fetch organization details for avatar
 const orgData = await fetchOrganization(org);
-
-// Fetch README
-const readmeContent = await fetchReadme(org, roadmapRepo);
-const readmeHtml = readmeContent ? md.render(readmeContent) : null;
-
-// Fetch all items from roadmap repo regardless of state
-const [discussions, issues, prs] = await Promise.all([
-  fetchDiscussions(org, [roadmapRepo]),
-  fetchIssues(org, 'all', [roadmapRepo]),
-  fetchPullRequests(org, 'all', [roadmapRepo]),
-]);
-
-// Filter to only roadmap repo items
-const roadmapDiscussions = discussions.filter(d => d.repository === roadmapRepo);
-const roadmapIssues = issues.filter(i => i.repository === roadmapRepo);
-const roadmapPRs = prs.filter(p => p.repository === roadmapRepo);
 
 const title = `${org} Roadmap`;
 const description = `Roadmap RFCs for ${org}`;
@@ -54,67 +22,14 @@ const description = `Roadmap RFCs for ${org}`;
     avatarUrl={orgData?.avatar_url}>
   <div slot="navigation" style="display: flex; gap: 1rem; align-items: center;">
     <a href="/">← Back to Project Board</a>
-    {readmeHtml && (
-      <button id="readme-button" class="readme-button">📖 View README</button>
-    )}
+    <button id="readme-button" class="readme-button">📖 View README</button>
   </div>
-  
-  {readmeHtml && (
-    <dialog id="readme-dialog" class="readme-dialog">
-      <div class="dialog-header">
-        <h2>Roadmap README</h2>
-        <button id="close-dialog" class="close-button" aria-label="Close">✕</button>
-      </div>
-      <div class="dialog-content" set:html={readmeHtml} />
-    </dialog>
-  )}
-  
-  <div class="roadmap-board">
-    <div class="roadmap-column">
-      <div class="column-header discussions">
-        <h2>{config.roadmapCategoryLabels?.discussions || 'Discussions'}</h2>
-        <span class="count">{roadmapDiscussions.length}</span>
-      </div>
-      <div class="column-content">
-        {roadmapDiscussions.map(item => (
-          <GitHubItem item={item} />
-        ))}
-        {roadmapDiscussions.length === 0 && (
-          <div class="empty-column">No discussions</div>
-        )}
-      </div>
+
+  <RoadmapBodyIsland server:defer>
+    <div slot="fallback">
+      <Loading />
     </div>
-    
-    <div class="roadmap-column">
-      <div class="column-header issues">
-        <h2>{config.roadmapCategoryLabels?.issues || 'Issues'}</h2>
-        <span class="count">{roadmapIssues.length}</span>
-      </div>
-      <div class="column-content">
-        {roadmapIssues.map(item => (
-          <GitHubItem item={item} />
-        ))}
-        {roadmapIssues.length === 0 && (
-          <div class="empty-column">No issues</div>
-        )}
-      </div>
-    </div>
-    
-    <div class="roadmap-column">
-      <div class="column-header prs">
-        <h2>{config.roadmapCategoryLabels?.pullRequests || 'Pull Requests'}</h2>
-        <span class="count">{roadmapPRs.length}</span>
-      </div>
-      <div class="column-content">
-        {roadmapPRs.map(item => (
-          <GitHubItem item={item} />
-        ))}
-        {roadmapPRs.length === 0 && (
-          <div class="empty-column">No pull requests</div>
-        )}
-      </div>
-    </div>
-  </div>
+  </RoadmapBodyIsland>
   
   <p slot="footer">
     Data fetched from <a href={`https://github.com/${org}/${roadmapRepo}`} target="_blank" rel="noopener noreferrer">
@@ -124,33 +39,46 @@ const description = `Roadmap RFCs for ${org}`;
 </BaseLayout>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function closeReadmeDialog() {
     const dialog = document.getElementById('readme-dialog') as HTMLDialogElement | null;
-    const openButton = document.getElementById('readme-button');
+    if (dialog && dialog.open) {
+      dialog.close();
+    }
+  }
+
+  function openReadmeDialog() {
+    const dialog = document.getElementById('readme-dialog') as HTMLDialogElement | null;
     const closeButton = document.getElementById('close-dialog');
-    
-    if (dialog && openButton && closeButton) {
-      openButton.addEventListener('click', () => {
-        dialog.showModal();
-      });
-      
-      closeButton.addEventListener('click', () => {
-        dialog.close();
-      });
-      
-      // Close on backdrop click
+
+    if (dialog && !dialog.open) {
+      dialog.showModal();
+    }
+
+    // Add event listener to close button
+    if (closeButton) {
+      closeButton.addEventListener('click', closeReadmeDialog);
+    }
+
+    // Add event listener to dialog backdrop
+    if (dialog) {
       dialog.addEventListener('click', (e) => {
         if (e.target === dialog) {
-          dialog.close();
+          closeReadmeDialog();
         }
       });
     }
-  });
+  }
+
+  function setupDialogListeners() {
+    const openButton = document.getElementById('readme-button');
+    openButton?.addEventListener('click', openReadmeDialog);
+  }
+
+
+  document.addEventListener('DOMContentLoaded', setupDialogListeners);
 </script>
 
-<style>
-  /* Page-specific styles for roadmap page */
-  
+<style is:global>
   .readme-button {
     padding: 0.5rem 1rem;
     background-color: var(--color-primary);

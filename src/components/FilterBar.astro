@@ -14,7 +14,7 @@ const {
 } = Astro.props;
 ---
 
-<div class="filters">
+<filter-bar class="filters">
   <div class="filter-group">
     <label for="state-filter">State:</label>
     <select id="state-filter" name="state">
@@ -74,86 +74,7 @@ const {
   )}
   
   <button type="button" class="filter-button">Apply Filters</button>
-</div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const stateFilter = document.getElementById('state-filter') as HTMLSelectElement;
-    const typeFilter = document.getElementById('type-filter') as HTMLSelectElement;
-    const filterButton = document.querySelector('.filter-button') as HTMLButtonElement;
-    const labelSelect = document.getElementById('label-select');
-    const labelDropdown = document.getElementById('label-dropdown');
-    const labelSearch = document.getElementById('label-search') as HTMLInputElement;
-    const labelOptions = document.getElementById('label-options');
-    
-    // Toggle label dropdown
-    if (labelSelect && labelDropdown) {
-      labelSelect.addEventListener('click', (e) => {
-        e.stopPropagation();
-        labelDropdown.classList.toggle('show');
-      });
-      
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!labelDropdown.contains(e.target as Node) && e.target !== labelSelect) {
-          labelDropdown.classList.remove('show');
-        }
-      });
-      
-      // Prevent dropdown from closing when clicking inside
-      labelDropdown.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-    }
-    
-    // Label search functionality
-    if (labelSearch && labelOptions) {
-      labelSearch.addEventListener('input', (e) => {
-        const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
-        const options = labelOptions.querySelectorAll('.label-option');
-        
-        options.forEach((option) => {
-          const labelName = option.querySelector('.label-name')?.textContent?.toLowerCase() || '';
-          if (labelName.includes(searchTerm)) {
-            (option as HTMLElement).style.display = '';
-          } else {
-            (option as HTMLElement).style.display = 'none';
-          }
-        });
-      });
-    }
-    
-    // Update selected count
-    if (labelOptions && labelSelect) {
-      labelOptions.addEventListener('change', () => {
-        const checkedCount = labelOptions.querySelectorAll('input[type="checkbox"]:checked').length;
-        const placeholder = labelSelect.querySelector('.label-placeholder');
-        if (placeholder) {
-          placeholder.textContent = checkedCount === 0 ? 'All labels' : `${checkedCount} selected`;
-        }
-      });
-    }
-    
-    filterButton.addEventListener('click', () => {
-      const params = new URLSearchParams();
-      params.set('state', stateFilter.value);
-      params.set('type', typeFilter.value);
-      
-      // Get selected labels
-      if (labelOptions) {
-        const selectedLabels = Array.from(
-          labelOptions.querySelectorAll('input[type="checkbox"]:checked')
-        ).map((checkbox) => (checkbox as HTMLInputElement).value);
-        
-        if (selectedLabels.length > 0) {
-          params.set('labels', selectedLabels.join(','));
-        }
-      }
-      
-      window.location.href = `/?${params.toString()}`;
-    });
-  });
-</script>
+</filter-bar>
 
 <style>
   .label-filter {
