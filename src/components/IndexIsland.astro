@@ -87,7 +87,7 @@ const defaultRepo =
         <>
             <div class="tabs">
                 {Array.from(itemsByRepo.keys()).map((repoName) => (
-                    <button
+                    <tab-button
                         class={`tab ${repoName === defaultRepo ? "active" : ""}`}
                         data-repo={repoName}
                     >
@@ -95,7 +95,7 @@ const defaultRepo =
                         <span class="tab-count">
                             {itemsByRepo.get(repoName)?.length || 0}
                         </span>
-                    </button>
+                    </tab-button>
                 ))}
             </div>
 

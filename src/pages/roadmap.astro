@@ -39,28 +39,43 @@ const description = `Roadmap RFCs for ${org}`;
 </BaseLayout>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function closeReadmeDialog() {
     const dialog = document.getElementById('readme-dialog') as HTMLDialogElement | null;
-    const openButton = document.getElementById('readme-button');
+    if (dialog && dialog.open) {
+      dialog.close();
+    }
+  }
+
+  function openReadmeDialog() {
+    const dialog = document.getElementById('readme-dialog') as HTMLDialogElement | null;
     const closeButton = document.getElementById('close-dialog');
-    
-    if (dialog && openButton && closeButton) {
-      openButton.addEventListener('click', () => {
-        dialog.showModal();
-      });
-      
-      closeButton.addEventListener('click', () => {
-        dialog.close();
-      });
-      
-      // Close on backdrop click
+
+    if (dialog && !dialog.open) {
+      dialog.showModal();
+    }
+
+    // Add event listener to close button
+    if (closeButton) {
+      closeButton.addEventListener('click', closeReadmeDialog);
+    }
+
+    // Add event listener to dialog backdrop
+    if (dialog) {
       dialog.addEventListener('click', (e) => {
         if (e.target === dialog) {
-          dialog.close();
+          closeReadmeDialog();
         }
       });
     }
-  });
+  }
+
+  function setupDialogListeners() {
+    const openButton = document.getElementById('readme-button');
+    openButton?.addEventListener('click', openReadmeDialog);
+  }
+
+
+  document.addEventListener('DOMContentLoaded', setupDialogListeners);
 </script>
 
 <style is:global>
